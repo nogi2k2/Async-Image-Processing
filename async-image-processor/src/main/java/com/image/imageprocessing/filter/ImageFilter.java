@@ -1,5 +1,7 @@
 package com.image.imageprocessing.filter;
 
-public class ImageFilter {
+import java.awt.image.BufferedImage;
 
+public interface ImageFilter {
+    BufferedImage filter(BufferedImage image);
 }
