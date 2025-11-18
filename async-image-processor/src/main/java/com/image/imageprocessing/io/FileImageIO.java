@@ -1,6 +1,6 @@
 package com.image.imageprocessing.io;
 
-import java.io.IOException;
+import java.util.Optional;
 import java.io.File;
 import java.awt.image.BufferedImage;
 import javax.imageio.ImageIO;
@@ -8,42 +8,52 @@ import javax.imageio.ImageIO;
 public class FileImageIO implements ImageReadInf{
 
     @Override
-    public <T> BufferedImage readImage(T src){
-        try{
-            String path = (String) src;
-            File filePath = new File(path);
-            return ImageIO.read(filePath);
-        }catch (IOException ex){
-            System.err.println("Image File Path is Invalid: " + ex.getMessage());
-            return null;
-        }catch (ClassCastException cce){
-            System.err.println("File Path Must be a String");
-        }
+    public <T> Optional<BufferedImage> readImage(T src){
+       if (src instanceof String path){
+            try {
+                File imageFile = new File(path);
+                return Optional.ofNullable(ImageIO.read(imageFile));
+            } catch (Exception ioe){
+                System.err.println("Unable to read Image from path: " + path + " | " + ioe.getMessage());
+            }
+       }else{
+            String type = (src == null)? "Null": src.getClass().getName();
+            System.err.println("ReadImage expects a String path. Type passed: " + type);
+       }
+       return Optional.empty();
     }
 
     @Override
     public <T> void saveImage(BufferedImage image, T dest){
-        try {
-            String path = (String) dest;
-            File filePath = new File(path);
-            int index = path.lastIndexOf('.');
-            String extension = "";
-            if (index > 0){
-                extension = path.substring(index+1);
-            }
+        if (dest instanceof String path){
+            try {
+                File outputFile = new File(path);
+                File parentDir = outputFile.getParentFile();
 
-            if (extension.isEmpty()){
-                System.err.println("Cannot Save Image: No File Extension Provided");
-                return;
-            }
+                if (parentDir != null && !parentDir.exists()){
+                    if (!parentDir.mkdirs()){
+                        System.err.println("Could not create parent directories for: " + path);
+                        return;
+                    }
+                }
 
-            ImageIO.write(image, extension, filePath);
-            System.out.println("Image Saved Successfully to the Path: " + path);
-            return;
-        }catch (IOException ioe) {
-            System.err.println("File Path Invalid: " + ioe.getMessage());
-        }catch (ClassCastException cce){
-            System.err.println("File Path Must be a String");
+                int index = path.lastIndexOf('.');
+                String extension = "";
+                if (index > 0){extension = path.substring(index+1);}
+                if (extension.isEmpty()){
+                    System.err.println("Can't Save Image: No File Extension Provided in path: " + path);
+                    return;
+                }
+
+                ImageIO.write(image, extension, outputFile);
+                System.out.println("Image saved successfully to: " + outputFile.getAbsolutePath());
+
+            } catch (Exception ioe){
+                System.err.println("File path Invalid: " + ioe.getMessage()); 
+            }
+        }else {
+            String type = (dest == null)? "Null" : dest.getClass().getName();
+            System.err.println("SaveImage expects a String path. Type passed: " + type);
         }
     }
 }
