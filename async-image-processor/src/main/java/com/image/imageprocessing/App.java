@@ -1,6 +1,16 @@
 package com.image.imageprocessing;
 
-import com.image.imageprocessing.filter.*;
+import java.awt.image.BufferedImage;
+import java.util.InputMismatchException;
+import java.util.Scanner;
+
+import com.image.imageprocessing.filter.BoxBlurFilter;
+import com.image.imageprocessing.filter.BrightnessFilter;
+import com.image.imageprocessing.filter.ContrastFilter;
+import com.image.imageprocessing.filter.GreyScaleFilter;
+import com.image.imageprocessing.filter.ImageFilter;
+import com.image.imageprocessing.filter.InvertFilter;
+import com.image.imageprocessing.filter.SaturationFilter;
 import com.image.imageprocessing.image.DrawMultipleImagesOnCanvas;
 import com.image.imageprocessing.io.FileImageIO;
 import com.image.imageprocessing.io.ImageReadInf;
@@ -10,13 +20,11 @@ import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.stage.Stage;
 
-import java.util.InputMismatchException;
-import java.util.Scanner;
-import java.awt.image.BufferedImage;
-
 public class App extends Application{
+    private static final String OUTPUT_DIRECTORY = "D:/Work/Projects/Java-backend/Async-Image-Processing/async-image-processor/src/main/outputs/";
     private static final String BASE_DIRECTORY = "D:/Work/Projects/Java-backend/Async-Image-Processing/async-image-processor/src/main/inputs/";
     private static final int TILE_SIZE = 10;
+    private String currentImageName;
 
     private ImageProcessor processor;
     private DrawMultipleImagesOnCanvas drawCanvas;
@@ -51,6 +59,22 @@ public class App extends Application{
                 System.out.println("----------------------------------------");
                 System.out.println("Completed Processing");
                 System.out.println("Total processing time: " + durationMs + " ms");
+                System.out.println("----------------------------------------\n");
+
+                System.out.println("Saving final processed Output");
+                BufferedImage resultImage = filter.filter(inputImage);
+
+                String originalName = this.currentImageName;
+                String modeName = (mode == 1)? "Sync":"Async";
+                String filterName = filter.getClass().getSimpleName();
+
+                int dotIndex = originalName.lastIndexOf('.');
+                String namePart = (dotIndex == -1)? originalName: originalName.substring(0, dotIndex);
+                String extension = (dotIndex == -1)? ".png": originalName.substring(dotIndex);
+                String newFileName = String.format("%s_%s_%s%s", namePart, modeName, filterName, extension);
+
+                String fullOutputPath = OUTPUT_DIRECTORY + newFileName;
+                imageIO.saveImage(resultImage, fullOutputPath);
                 System.out.println("----------------------------------------\n");
 
             } catch (InputMismatchException ime) {
@@ -125,6 +149,7 @@ public class App extends Application{
         System.out.println("Base image directory is set to: " + BASE_DIRECTORY);
         System.out.print("Please enter the image file name with the extension: ");
         String imageName = scanner.nextLine();
+        this.currentImageName = imageName;
         String fullImagePath = BASE_DIRECTORY + imageName;
 
         System.out.println("Loading image from: " + fullImagePath);

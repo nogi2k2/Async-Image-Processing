@@ -1,18 +1,19 @@
 package com.image.imageprocessing.processor;
 
-import com.image.imageprocessing.filter.ImageFilter;
-import com.image.imageprocessing.image.DrawMultipleImagesOnCanvas;
-import com.image.imageprocessing.image.ImageData;
-
 import java.awt.image.BufferedImage;
-import java.util.List;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+import com.image.imageprocessing.filter.ImageFilter;
+import com.image.imageprocessing.image.DrawMultipleImagesOnCanvas;
+import com.image.imageprocessing.image.ImageData;
+
 public class ImageProcessor {
     private final ExecutorService executorService;
+    private static final int SIMULATED_DELAY_MS = 1;
 
     public ImageProcessor(){
         int cores = Runtime.getRuntime().availableProcessors();
@@ -34,6 +35,7 @@ public class ImageProcessor {
                 CompletableFuture<Void> future = CompletableFuture.runAsync(() -> {
                     try {
                         BufferedImage result = imageFilter.filter(subImage);
+                        Thread.sleep(SIMULATED_DELAY_MS);
                         ImageData imageData = new ImageData(result, copyI * num, copyJ * num, num, num);
                         drawfn.addImageToQueue(imageData);
                     }catch(Exception e) {
@@ -59,6 +61,13 @@ public class ImageProcessor {
             for (int j = 0; j<numVerticalImages; j++){
                 BufferedImage subImage = image.getSubimage(i*num, j*num, num, num);
                 BufferedImage result = imageFilter.filter(subImage);
+                
+                try {
+                    Thread.sleep(SIMULATED_DELAY_MS);
+                } catch (InterruptedException ie) {
+                    Thread.currentThread().interrupt();
+                }
+
                 ImageData imageData = new ImageData(result, i*num, j*num, num, num);
                 drawfn.addImageToQueue(imageData);
             }
