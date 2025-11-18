@@ -13,9 +13,14 @@ public class ImageData {
         this.image = image;
         this.i = i;
         this.j = j;
-        this.x = x;image
+        this.x = x;
         this.y = y;
     }
+
+    public ImageData(){}
+
+    public void setImage(BufferedImage image){this.image = image;}
+    public BufferedImage getImage(){return this.image;}
 
     public void setI(int i){this.i = i;}
     public int getI(){return this.i;}
