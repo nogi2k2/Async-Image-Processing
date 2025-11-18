@@ -10,7 +10,7 @@ public class BrightnessFilter implements ImageFilter{
     }
 
     @Override
-    public BufferedImage fitler(BufferedImage image){
+    public BufferedImage filter(BufferedImage image){
         int width = image.getWidth();
         int height = image.getHeight();
         BufferedImage brightenedImage = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);

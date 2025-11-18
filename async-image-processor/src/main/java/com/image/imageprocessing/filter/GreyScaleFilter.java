@@ -7,7 +7,7 @@ public class GreyScaleFilter implements ImageFilter{
     @Override
     public BufferedImage filter(BufferedImage image){
         int width = image.getWidth();
-        int height = image.getHeigth();
+        int height = image.getHeight();
         BufferedImage greyScaleImage = new BufferedImage(width, height, BufferedImage.TYPE_BYTE_GRAY);
 
         for (int y = 0; y<height; y++){
