@@ -147,7 +147,7 @@
           <execution>
             <id>default-cli</id>
             <configuration>
-              <mainClass>com.image.imageprocessing.MainApp</mainClass>
+              <mainClass>com.image.imageprocessing.App</mainClass>
               
               <launcher>app</launcher>
               <jlinkZipName>app</jlinkZipName>
